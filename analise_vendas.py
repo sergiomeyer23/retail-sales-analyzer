@@ -1,26 +1,51 @@
-vendas = [
-    {"produto": "Camiseta", "valor": 49.90},
-    {"produto": "Calça", "valor": 129.90},
-    {"produto": "Boné", "valor": 39.90},
-    {"produto": "Tênis", "valor": 249.90},
-]
+import csv
 
-valores = [i["valor"] for i in vendas]
+def ler_vendas(caminho_arquivo):
+    produtos = []
+    with open(caminho_arquivo, 'r') as arquivo:
+        leitor = csv.DictReader(arquivo)
+        for linha in leitor:
+            produto = {
+                "nome": linha['produto'],
+                "valor": float(linha['valor']),
+                "quantidade": int(linha['quantidade'])
+            }
+            produto['receita'] = produto['valor'] * produto['quantidade']
+            produtos.append(produto)
+    return produtos
 
-valores_altos = [i["valor"] for i in vendas if i["valor"]>100]
+def gerar_relatorio(produtos):
+    # Estatísticas básicas
+    valores = [p['valor'] for p in produtos]
+    quantidades = [p['quantidade'] for p in produtos]
+    receitas = [p['receita'] for p in produtos]
+    
+    total = sum(receitas)
+    media = sum(valores) / len(valores)
+    total_itens = sum(quantidades)
+    
+    # Máximos e mínimos
+    mais_caro = max(produtos, key=lambda p: p['valor'])
+    mais_barato = min(produtos, key=lambda p: p['valor'])
+    maior_receita = max(produtos, key=lambda p: p['receita'])
+    
+    # Produtos acima de R$ 100
+    produtos_caro = [p for p in produtos if p['valor'] > 100]
+    
+    # Imprimir relatório
+    print("=== RELATÓRIO DE VENDAS ===")
+    print(f"Total vendido: R$ {total:.2f}")
+    print(f"Valor médio dos produtos: R$ {media:.2f}")
+    print(f"Quantidade total de itens: {total_itens}")
+    print()
+    print(f"Produto mais caro: {mais_caro['nome']} (R$ {mais_caro['valor']:.2f})")
+    print(f"Produto mais barato: {mais_barato['nome']} (R$ {mais_barato['valor']:.2f})")
+    print(f"Produto com maior receita: {maior_receita['nome']} (R$ {maior_receita['receita']:.2f})")
+    print()
+    print(f"Produtos acima de R$ 100: {len(produtos_caro)}")
+    for p in produtos_caro:
+        print(f"  - {p['nome']}: R$ {p['valor']:.2f}")
 
-nomes = [i["produto"] for i in vendas]
-
-
-total = sum(valores)
-media_venda = sum(valores)/len(vendas)
-maior = max(valores)
-menor = min(valores)
-
-print("=== RELATÓRIO DE VENDAS ===")
-print(f"Total vendido: R$ {total:.2f}")
-print(f"Média por venda: R$ {media_venda:.2f}")
-print(f"Maior venda: R$ {maior:.2f}")
-print(f"Menor venda: R$ {menor:.2f}")
-print(f"\nProdutos acima de R$ 100: {valores_altos}")
-print(f"Nomes dos produtos: {nomes}")
+if __name__ == "__main__":
+    vendas = ler_vendas('vendas_exemplo.csv')
+    gerar_relatorio(vendas)
