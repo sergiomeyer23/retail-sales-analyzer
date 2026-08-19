@@ -32,7 +32,8 @@ def ler_vendas(caminho_arquivo):
         print(f"Erro inesperado: {e}")
         return []
     
-def gerar_relatorio(produtos):
+def gerar_relatorio(produtos, limite=100):
+    """Gera relatório de vendas. Produtos com valor acima de `limite` são listados."""
     if not produtos:
         print("Nenhum produto para gerar o relatório")
         return 
@@ -51,8 +52,8 @@ def gerar_relatorio(produtos):
         mais_barato = min(produtos, key=lambda p: p['valor'])
         maior_receita = max(produtos, key=lambda p: p['receita'])
         
-        # Produtos acima de R$ 100
-        produtos_caro = [p for p in produtos if p['valor'] > 100]
+        # Produtos acima do limite configurável
+        produtos_caro = [p for p in produtos if p['valor'] > limite]
         # Imprimir relatório
         print("=== RELATÓRIO DE VENDAS ===")
         print(f"Total vendido: R$ {total:.2f}")
@@ -63,7 +64,7 @@ def gerar_relatorio(produtos):
         print(f"Produto mais barato: {mais_barato['nome']} (R$ {mais_barato['valor']:.2f})")
         print(f"Produto com maior receita: {maior_receita['nome']} (R$ {maior_receita['receita']:.2f})")
         print()
-        print(f"Produtos acima de R$ 100: {len(produtos_caro)}")
+        print(f"Produtos acima de R$ {limite}: {len(produtos_caro)}")
         for p in produtos_caro:
             print(f"  - {p['nome']}: R$ {p['valor']:.2f}")
     
